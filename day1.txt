@@ -1,16 +1,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-caching-server
+  
+  name: single-demo
+  
   labels:
-    purpose: multi-container
+    app: nginx
 spec:
   containers:
-  - name: nginx-container1
-    image: nginx
-  
-  - name: busubox-container2
-    image: busybox
-    command:
-      - sleep
-      - "3600"
+  - name: nginx
+    image: 445567114749.dkr.ecr.us-west-2.amazonaws.com/mydemo
