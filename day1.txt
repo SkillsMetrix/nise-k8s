@@ -1,19 +1,28 @@
-apiVersion: batch/v1beta1
-kind: CronJob
+apiVersion: v1
+kind: Pod
 metadata:
-  name: cron-test-ttl
+  name: sidecar-pod
+ 
 spec:
-  schedule: "*/1 * * * *"
-  jobTemplate:
-    spec:
-      ttlSecondsAfterFinished: 10
-      template:
-        spec:
-          containers:
-            - name: cron-test
-              image: busybox
-              args:
-                - /bin/sh
-                - -c
-                - date; echo Hello this is Cron test
-          restartPolicy: OnFailure
+  volumes:
+    - name: logs
+      emptyDir: {}
+
+  containers:
+  - name: app-container
+    image: alpine
+    command: ["/bin/sh"]
+    args: ["-c" ,"while true; do date >> /var/log/app.log; sleep 5; done"]
+    volumeMounts:
+      - name: logs
+        mountPath: /var/log
+  
+  - name: log-exporter
+    image: nginx
+    ports:
+      - containerPort: 80
+    volumeMounts:
+      - name: logs
+        mountPath: /usr/share/nginx/html
+
+    
