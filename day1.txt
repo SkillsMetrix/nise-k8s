@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: myapp-pod
+  name: nginx-caching-server
   labels:
-    app: myapp
+    purpose: multi-container
 spec:
-  initContainers:
-  - name: init-myservice
-    image: busybox:1.28
-    command: ['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 5; done;']
-  
   containers:
-  - name: myapp-container
-    image: busybox:1.28
-    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  - name: nginx-container1
+    image: nginx
+  
+  - name: busubox-container2
+    image: busybox
+    command:
+      - sleep
+      - "3600"
