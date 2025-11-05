@@ -1,18 +1,19 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
-  name: myjob
+  name: cron-test-ttl
 spec:
-  completions: 5
-  template:
-    metadata:
-      name: countdown-pod
+  schedule: "*/1 * * * *"
+  jobTemplate:
     spec:
-      containers:
-      - name: counter
-        image: centos:7
-        command: 
-          - "bin/bash"
-          - "-c"
-          - "for i in 9 8 7 6 5 4 3 2 1 ; do echo $i ; sleep 1 ; done"
-      restartPolicy: Never
+      ttlSecondsAfterFinished: 10
+      template:
+        spec:
+          containers:
+            - name: cron-test
+              image: busybox
+              args:
+                - /bin/sh
+                - -c
+                - date; echo Hello this is Cron test
+          restartPolicy: OnFailure
