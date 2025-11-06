@@ -1,23 +1,29 @@
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: sec-pod
-  labels:
-    name: sec-pod
+  name: app-deployment
 spec:
-  containers:
-  - name: redis-container
-    image: redis
-    env:
-      - name: SEC_USR
-        valueFrom:
-          secretKeyRef:
-            name: my-secret
-            key: username
-      - name: SEC_PASS
-        valueFrom:
-          secretKeyRef:
-            name: my-secret
-            key: password
-  restartPolicy: Never
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp-container
+        image: busybox
+        command: ["sh", "-c", "env && sleep 3600"]
+        env:
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: my-config
+              key: APP_NAME
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: my-config
+              key: APP_ENV
