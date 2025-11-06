@@ -1,29 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: demo-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: myapp
+      app: demo-app
   template:
     metadata:
       labels:
-        app: myapp
+        app: demo-app
     spec:
       containers:
-      - name: myapp-container
+      - name: demo-container
         image: busybox
-        command: ["sh", "-c", "env && sleep 3600"]
+        command: ["sh", "-c", "echo Starting... && sleep 3600"]
+        envFrom:
+          - configMapRef:
+              name: my-config
         env:
-        - name: APP_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: my-config
-              key: APP_NAME
-        - name: APP_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: my-config
-              key: APP_ENV
+          - name: USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: username
+          - name: PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: password
+        volumeMounts:
+          - name: temp-storage
+            mountPath: /tmp/data
+      volumes:
+        - name: temp-storage
+          emptyDir: {}
